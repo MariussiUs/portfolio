@@ -5,12 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Roblox Scripter Portfolio</title>
   <style>
+    @keyframes fadeInSlide {
+    0% {
+      opacity: 0;
+      transform: translateY(30px) scale(0.98);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
     body {
       font-family: Arial, sans-serif;
       background: #f8f9fa;
       margin: 0;
       padding: 0;
       color: #333;
+      background: linear-gradient(to right, #f8f9fa, #e8efff);
+      animation: fadeInSlide 1.2s ease-out forwards;
     }
     header {
       background-color: #222;
