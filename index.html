@@ -136,9 +136,10 @@
             <!-- Replace images/profile.png with your actual profile picture filename in the repo -->
             <img src="260f20dcd15bb1863c5214ff368e78df.png" alt="Profile picture" >
           </figure>
-          <figure class="pp">
-            <!-- Avatar will be filled via JS using your username -->
-            <img id="robloxAvatar" src="" alt="Roblox avatar for Swordswinger20112" />
+            <figure class="pp">
+  <img 
+    src="https://www.roblox.com/headshot-thumbnail/image?userId=491800468&width=420&height=420&format=png" 
+    alt="Roblox avatar for Swordswinger20112" />
           </figure>
         </div>
       </div>
@@ -232,31 +233,6 @@
 
     // Year in footer
     document.getElementById('year').textContent = new Date().getFullYear();
-
-    // Roblox avatar by username → userId → thumbnail
-    (async function loadAvatar(){
-      const username = 'Swordswinger20112';
-      const avatarImg = document.getElementById('robloxAvatar');
-      try{
-        // Get userId from username
-        const res = await fetch('https://users.roblox.com/v1/usernames/users', {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({usernames:[username], excludeBannedUsers:true})
-        });
-        const data = await res.json();
-        const userId = data?.data?.[0]?.id;
-        if(!userId) throw new Error('User not found');
-        // Get avatar thumbnail URL
-        const thumbRes = await fetch(`https://thumbnails.roblox.com/v1/users/avatar?userIds=${userId}&size=420x420&format=Png&isCircular=false`);
-        const tData = await thumbRes.json();
-        const url = tData?.data?.[0]?.imageUrl;
-        if(url){ avatarImg.src = url; }
-        else { avatarImg.alt = 'Avatar could not be loaded'; }
-      }catch(err){
-        console.warn('Avatar fetch failed:', err);
-        avatarImg.alt = 'Avatar unavailable (API blocked)';
-      }
-    })();
   </script>
 </body>
 </html>
