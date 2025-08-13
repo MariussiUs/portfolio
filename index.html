@@ -1,4 +1,174 @@
-<!-- SYSTEM: COMBAT -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MariussiUs — Roblox Scripting Portfolio</title>
+  <meta name="description" content="Roblox scripting portfolio for Swordswinger20112 — Inventory System, Combat System with Blocking, and AI Pathfinding System." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg: #0b0e14;           /* deep ink */
+      --panel: #111522;        /* card bg */
+      --muted: #96a1b2;        /* secondary text */
+      --text: #e8ecf1;         /* primary text */
+      --accent: #6ee7ff;       /* cyan accent */
+      --accent-2: #9dff9d;     /* green accent */
+      --ring: rgba(110,231,255,.45);
+      --radius: 18px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: 'Outfit', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji','Segoe UI Emoji', 'Segoe UI Symbol';
+      background: radial-gradient(1200px 800px at 10% -10%, rgba(110,231,255,.08), transparent 60%),
+                  radial-gradient(900px 600px at 100% 10%, rgba(157,255,157,.08), transparent 60%),
+                  var(--bg);
+      color:var(--text);
+      line-height:1.6;
+      overflow-x:hidden;
+      opacity:0; transform:translateY(12px); transition:opacity .7s ease, transform .7s ease;
+    }
+    body.loaded{opacity:1; transform:none}
+
+    /* Layout */
+    .container{width:min(1100px, 92%); margin:0 auto}
+    header.nav{
+      position:sticky; top:0; z-index:50; backdrop-filter:saturate(140%) blur(10px);
+      background:linear-gradient(180deg, rgba(11,14,20,.9), rgba(11,14,20,.4));
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .nav-inner{display:flex; align-items:center; justify-content:space-between; gap:.5rem; padding:.8rem 0}
+    .brand{display:flex; align-items:center; gap:.6rem; font-weight:800; letter-spacing:.3px}
+    .brand .dot{width:10px; height:10px; border-radius:50%; background:conic-gradient(from 90deg, var(--accent), var(--accent-2)); box-shadow:0 0 16px var(--ring)}
+    .nav a{color:var(--text); text-decoration:none; opacity:.9}
+    .nav a:hover{opacity:1}
+    .nav-links{display:flex; flex-wrap:wrap; gap:.9rem}
+    .btn{display:inline-flex; align-items:center; gap:.5rem; padding:.7rem 1rem; border-radius:999px; background:linear-gradient(180deg, rgba(110,231,255,.15), rgba(110,231,255,.08)); border:1px solid rgba(110,231,255,.5); box-shadow:0 4px 16px rgba(110,231,255,.08); text-decoration:none}
+
+    /* Hero */
+    .hero{padding:84px 0 36px}
+    .hero-grid{display:grid; grid-template-columns: 1.2fr .8fr; gap:2rem; align-items:center}
+    .chip{display:inline-flex; align-items:center; gap:.5rem; padding:.4rem .7rem; border-radius:999px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04); font-size:.9rem; color:var(--muted)}
+    .title{font-size:clamp(1.8rem, 3vw + 1rem, 3.2rem); line-height:1.1; margin:.3rem 0 1rem; font-weight:800}
+    .subtitle{color:var(--muted); max-width:60ch}
+    .hero-cards{display:flex; gap:1rem; margin-top:1.2rem; flex-wrap:wrap}
+    .card{background:var(--panel); border:1px solid rgba(255,255,255,.08); border-radius:var(--radius); box-shadow:var(--shadow); padding:1rem}
+    .id-line{font-size:.95rem; color:var(--muted)}
+    .pp-wrap{display:grid; grid-template-columns:1fr 1fr; gap:1rem}
+    .pp{border-radius:var(--radius); overflow:hidden; border:1px solid rgba(255,255,255,.08); background:#0f1320}
+    .pp img{display:block; width:100%; height:auto}
+
+    /* Sections */
+    section{scroll-margin-top:84px}
+    .section{padding:70px 0}
+    .section h2{font-size:clamp(1.4rem, 2vw + .8rem, 2.2rem); margin:0 0 .4rem}
+    .muted{color:var(--muted)}
+    .grid{display:grid; grid-template-columns: 1fr 1fr; gap:1.4rem; align-items:start}
+    .pill{display:inline-block; padding:.4rem .7rem; border-radius:999px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04); font-size:.9rem; margin:.25rem .35rem .25rem 0}
+    .video{position:relative; padding-top:56.25%; border-radius:var(--radius); overflow:hidden; border:1px solid rgba(255,255,255,.08); background:#000}
+    .video iframe{position:absolute; inset:0; width:100%; height:100%}
+
+    /* Appear animation on scroll */
+    .reveal{opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease}
+    .reveal.in{opacity:1; transform:none}
+
+    /* Footer */
+    footer{padding:60px 0 80px; color:var(--muted)}
+
+    /* Responsive */
+    @media (max-width: 900px){
+      .hero-grid{grid-template-columns:1fr}
+      .grid{grid-template-columns:1fr}
+      .pp-wrap{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width: 560px){
+      .pp-wrap{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <header class="nav">
+    <div class="container nav-inner">
+      <div class="brand"><span class="dot"></span> <span>MariussiUs</span></div>
+      <nav class="nav-links">
+        <a href="#about">About</a>
+        <a href="#inventory">Inventory</a>
+        <a href="#combat">Combat</a>
+        <a href="#ai">AI Pathfinding</a>
+        <a class="btn" href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO / ABOUT -->
+  <section id="about" class="hero container">
+    <div class="hero-grid">
+      <div class="reveal">
+        <span class="chip">Roblox Scripter • GMT+2 • Norway</span>
+        <h1 class="title">Hey! I'm <span style="background:linear-gradient(90deg,var(--accent),var(--accent-2)); -webkit-background-clip:text; background-clip:text; color:transparent">MariussiUs</span></h1>
+        <p class="subtitle">I'm <strong>14</strong> with <strong>4 years</strong> of Roblox Lua experience. I build clean, well-documented systems focused on performance and clarity.</p>
+        <div class="hero-cards">
+          <div class="card">
+            <div class="id-line">Roblox username</div>
+            <div><strong>Swordswinger20112</strong></div>
+          </div>
+          <div class="card">
+            <div class="id-line">Core skills</div>
+            <div>
+              <span class="pill">Datastores</span>
+              <span class="pill">Combat Systems</span>
+              <span class="pill">Module Scripts</span>
+              <span class="pill">Problem Solving & Debugging</span>
+              <span class="pill">Clear & Accessible Code</span>
+              <span class="pill">Motivation</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="pp-wrap">
+          <figure class="pp">
+            <!-- Replace images/profile.png with your actual profile picture filename in the repo -->
+            <img src="260f20dcd15bb1863c5214ff368e78df.png" alt="Profile picture" >
+          </figure>
+            <figure class="pp">
+  <img 
+    src="https://www.roblox.com/headshot-thumbnail/image?userId=491800468&width=420&height=420&format=png" 
+    src="https://tr.rbxcdn.com/30DAY-Avatar-593FCF819D10A0A353B0887CDB255E6E-Png/352/352/Avatar/Webp/noFilter" 
+    alt="Roblox avatar for Swordswinger20112" />
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SYSTEM: INVENTORY -->
+  <section id="inventory" class="section">
+    <div class="container grid">
+      <div class="reveal">
+        <h2>Inventory System</h2>
+        <p class="muted">A modular, scalable inventory built with clean module scripts. Supports item stacking, categories, and robust save/load with datastores. Designed for clarity and easy extension by other scripters.</p>
+        <div>
+          <span class="pill">Module Scripts</span>
+          <span class="pill">Datastores</span>
+          <span class="pill">Clear & Accessible Code</span>
+          <span class="pill">Problem Solving</span>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="video">
+          <iframe src="https://www.youtube.com/embed/zt3MtIOzs5w" title="Inventory System" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+ <!-- SYSTEM: COMBAT -->
 <section id="combat" class="section">
   <div class="container grid">
     <div class="reveal">
@@ -38,3 +208,32 @@
     </div>
   </div>
 </section>
+
+  <!-- CONTACT / FOOTER -->
+  <section id="contact" class="section">
+    <div class="container reveal">
+      <h2>Contact</h2>
+      <p class="muted">Roblox: <strong>Swordswinger20112</strong> • Timezone: GMT+2 • Country: Norway</p>
+      <p class="muted">Hosting via GitHub Pages. Built with semantic HTML, modern CSS, and a sprinkle of JavaScript for smooth animations.</p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container muted">© <span id="year"></span> Swordswinger20112. All rights reserved.</div>
+  </footer>
+
+  <script>
+    // Page-load entrance animation
+    window.addEventListener('load', () => document.body.classList.add('loaded'));
+
+    // Intersection Observer for reveal-on-scroll
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+    }, {threshold: .14});
+    document.querySelectorAll('.reveal').forEach(el=> io.observe(el));
+
+    // Year in footer
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
