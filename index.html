@@ -1,347 +1,187 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MariussiUs — Roblox Scripting Portfolio</title>
-  <meta name="description" content="Roblox scripting portfolio for MariussiUs — Inventory System, Combat System with Blocking, AI Pathfinding System, and Dialogue System." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg:#0b0e14;
-      --panel:#111522;
-      --muted:#96a1b2;
-      --text:#e8ecf1;
-      --accent:#6ee7ff;
-      --accent-2:#9dff9d;
-      --ring:rgba(110,231,255,.45);
-      --radius:18px;
-      --shadow:0 10px 30px rgba(0,0,0,.35);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%;scroll-behavior:smooth}
-    body{
-      margin:0;font-family:'Outfit',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,'Noto Sans';
-      background:
-        radial-gradient(1200px 800px at 10% -10%, rgba(110,231,255,.08), transparent 60%),
-        radial-gradient(900px 600px at 100% 10%, rgba(157,255,157,.08), transparent 60%),
-        var(--bg);
-      color:var(--text);line-height:1.6;overflow-x:hidden;
-      opacity:0;transform:translateY(12px);transition:opacity .7s ease,transform .7s ease;
-    }
-    body.loaded{opacity:1;transform:none}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MariussiUs Portfolio</title>
+<style>
+  /* Reset & base */
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: white;
+    background: linear-gradient(120deg, #0a0a0a, #0d1117, #0a0a0a, #0d1117);
+    background-size: 400% 400%;
+    animation: gradientShift 20s ease infinite;
+    transition: background 0.5s ease;
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
 
-    /* Layout / Nav */
-    .container{width:min(1100px,92%);margin:0 auto}
-    header.nav{
-      position:sticky;top:0;z-index:50;
-      backdrop-filter:saturate(140%) blur(10px);
-      background:linear-gradient(180deg, rgba(11,14,20,.9), rgba(11,14,20,.4));
-      border-bottom:1px solid rgba(255,255,255,.06);
-    }
-    .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.8rem 0}
-    .brand{display:flex;align-items:center;gap:.6rem;font-weight:800;letter-spacing:.3px}
-    .brand .dot{width:10px;height:10px;border-radius:50%;background:conic-gradient(from 90deg,var(--accent),var(--accent-2));box-shadow:0 0 16px var(--ring)}
-    .nav-links{display:flex;gap:.9rem;align-items:center}
-    .nav a{color:var(--text);text-decoration:none;opacity:.9;transition:opacity .2s,color .2s}
-    .nav a:hover,.nav a.active{opacity:1;color:var(--accent)}
-    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1rem;border-radius:999px;background:linear-gradient(180deg, rgba(110,231,255,.15), rgba(110,231,255,.08));border:1px solid rgba(110,231,255,.5);box-shadow:0 4px 16px rgba(110,231,255,.08);text-decoration:none}
+  /* Container */
+  .container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 2rem;
+  }
 
-    /* Hamburger */
-    .menu-toggle{display:none;flex-direction:column;gap:4px;cursor:pointer}
-    .menu-toggle span{width:22px;height:2px;background:var(--text);transition:all .3s ease}
-    .nav-open .menu-toggle span:nth-child(1){transform:rotate(45deg) translateY(6px)}
-    .nav-open .menu-toggle span:nth-child(2){opacity:0}
-    .nav-open .menu-toggle span:nth-child(3){transform:rotate(-45deg) translateY(-6px)}
-    .nav-open #navLinks{display:flex !important;flex-direction:column;gap:1rem;padding-top:1rem}
+  /* Navigation */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    transition: top 0.3s ease;
+  }
+  nav .nav-links {
+    display: flex;
+    gap: 1.5rem;
+  }
+  nav a {
+    color: white;
+    text-decoration: none;
+    position: relative;
+    transition: color 0.3s ease;
+  }
+  nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, cyan, limegreen);
+    transition: width 0.3s ease;
+  }
+  nav a:hover::after, nav a.active::after {
+    width: 100%;
+  }
 
-    /* Hero */
-    .hero{padding:84px 0 36px}
-    .hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:2rem;align-items:center}
-    .chip{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem .7rem;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);font-size:.9rem;color:var(--muted)}
-    .title{
-      font-size:clamp(1.8rem,3vw + 1rem,3.2rem);line-height:1.1;margin:.3rem 0 1rem;font-weight:800;
-      background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent
-    }
-    .subtitle{color:var(--muted);max-width:60ch}
-    .hero-cards{display:flex;gap:1rem;margin-top:1.2rem;flex-wrap:wrap}
-    .card{background:var(--panel);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);box-shadow:var(--shadow);padding:1rem;transition:transform .2s ease,box-shadow .2s ease}
-    .card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(110,231,255,.15)}
-    .id-line{font-size:.95rem;color:var(--muted)}
-    .pp-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-    .pp{border-radius:var(--radius);overflow:hidden;border:1px solid rgba(255,255,255,.08);background:#0f1320}
-    .pp img{display:block;width:100%;height:auto}
+  /* Section reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.in {
+    opacity: 1;
+    transform: translateY(0);
+  }
 
-    /* Sections */
-    section{scroll-margin-top:84px}
-    .section{padding:70px 0}
-    .section h2{font-size:clamp(1.4rem,2vw + .8rem,2.2rem);margin:0 0 .4rem}
-    .muted{color:var(--muted)}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;align-items:start}
-    .pill{display:inline-block;padding:.4rem .7rem;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);font-size:.9rem;margin:.25rem .35rem .25rem 0;transition:background .2s ease,color .2s ease}
-    .pill:hover{background:var(--accent);color:#000}
-    .video{position:relative;padding-top:56.25%;border-radius:var(--radius);overflow:hidden;border:1px solid rgba(255,255,255,.08);background:#000;box-shadow:0 0 10px rgba(110,231,255,.1)}
-    .video iframe{position:absolute;inset:0;width:100%;height:100%}
+  /* Cards */
+  .card {
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 0 0 transparent;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 15px rgba(0,255,200,0.3);
+  }
 
-    /* Reveal */
-    .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
-    .reveal.in{opacity:1;transform:none}
+  /* Video styling */
+  iframe {
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,255,200,0.15);
+    transition: box-shadow 0.3s ease;
+  }
+  iframe:hover {
+    box-shadow: 0 0 25px rgba(0,255,200,0.4);
+  }
 
-    /* Contact */
-    .contact-icons{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1rem}
-    .contact-icons a{display:inline-flex;align-items:center;gap:.5rem;color:var(--text);text-decoration:none;opacity:.88;transition:opacity .2s,color .2s}
-    .contact-icons a:hover{opacity:1;color:var(--accent)}
-    .contact-icons svg{width:22px;height:22px;fill:currentColor;flex:0 0 22px}
-
-    /* Footer */
-    footer{padding:60px 0 80px;color:var(--muted);text-align:center}
-
-    /* Responsive */
-    @media (max-width:900px){
-      .hero-grid,.grid{grid-template-columns:1fr}
-      .pp-wrap{grid-template-columns:1fr 1fr}
-      .menu-toggle{display:flex}
-      #navLinks{display:none}
-    }
-    @media (max-width:560px){
-      .pp-wrap{grid-template-columns:1fr}
-      .section{padding:56px 0}
-      .hero{padding:72px 0 28px}
-    }
-  </style>
+  /* Contact icons */
+  .contact a svg {
+    width: 24px;
+    height: 24px;
+    fill: white;
+    transition: fill 0.3s ease, filter 0.3s ease;
+  }
+  .contact a:hover svg {
+    filter: drop-shadow(0 0 6px cyan) drop-shadow(0 0 12px limegreen);
+  }
+</style>
 </head>
 <body>
-  <!-- NAV -->
-  <header class="nav">
-    <div class="container nav-inner">
-      <div class="brand"><span class="dot"></span><span>MariussiUs</span></div>
-      <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navLinks">
-        <span></span><span></span><span></span>
-      </button>
-      <nav class="nav-links" id="navLinks" aria-label="Main Navigation">
-        <a href="#about">About</a>
-        <a href="#inventory">Inventory</a>
-        <a href="#combat">Combat</a>
-        <a href="#ai">AI Pathfinding</a>
-        <a href="#dialogue">Dialogue System</a>
-        <a class="btn" href="#contact">Contact</a>
-      </nav>
-    </div>
-  </header>
 
-  <!-- HERO / ABOUT -->
-  <section id="about" class="hero container">
-    <div class="hero-grid">
-      <div class="reveal">
-        <span class="chip">Roblox Scripter • GMT+2 • Norway</span>
-        <h1 class="title">Hey! I'm <span style="background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent">MariussiUs</span></h1>
-        <p class="subtitle">I'm <strong>14</strong> with <strong>4 years</strong> of Roblox Lua experience. I build clean, well-documented systems focused on performance and clarity.</p>
-        <div class="hero-cards">
-          <div class="card">
-            <div class="id-line">Roblox username</div>
-            <div><strong>Swordswinger20112</strong></div>
-          </div>
-          <div class="card">
-            <div class="id-line">Core skills</div>
-            <div>
-              <span class="pill">Datastores</span>
-              <span class="pill">Combat Systems</span>
-              <span class="pill">Module Scripts</span>
-              <span class="pill">Problem Solving & Debugging</span>
-              <span class="pill">Clear & Accessible Code</span>
-              <span class="pill">Motivation</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="reveal">
-        <div class="pp-wrap">
-          <figure class="pp">
-            <img src="260f20dcd15bb1863c5214ff368e78df.png" alt="Portrait of MariussiUs">
-          </figure>
-          <figure class="pp">
-            <img src="noFilter.png" alt="Roblox avatar for Swordswinger20112">
-          </figure>
-        </div>
-      </div>
-    </div>
-  </section>
+<nav>
+  <div class="logo">MariussiUs</div>
+  <div class="nav-links" id="navLinks">
+    <a href="#home" class="active">Home</a>
+    <a href="#combat">Combat</a>
+    <a href="#ai">AI Pathfinding</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
 
-  <!-- SYSTEM: INVENTORY -->
-  <section id="inventory" class="section">
-    <div class="container grid">
-      <div class="reveal">
-        <h2>Inventory System</h2>
-        <p class="muted">A modular, scalable inventory built with clean module scripts. Supports item stacking, categories, and robust save/load with datastores. Designed for clarity and easy extension by other scripters.</p>
-        <div>
-          <span class="pill">Module Scripts</span>
-          <span class="pill">Datastores</span>
-          <span class="pill">Clear & Accessible Code</span>
-          <span class="pill">Problem Solving</span>
-        </div>
-      </div>
-      <div class="reveal">
-        <div class="video">
-          <iframe src="https://www.youtube.com/embed/zt3MtIOzs5w" title="Inventory System" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
-      </div>
-    </div>
-  </section>
+<section id="home" class="container reveal">
+  <h1>Welcome to My Portfolio</h1>
+</section>
 
-  <!-- SYSTEM: COMBAT (fixed) -->
-  <section id="combat" class="section">
-    <div class="container grid">
-      <div class="reveal">
-        <h2>Combat System with Blocking</h2>
-        <p class="muted">Responsive combat featuring hits, combos, and a timing-based block mechanic. Uses server-authoritative checks, remote events, and clean state management to keep gameplay fair and snappy.</p>
-        <div>
-          <span class="pill">Combat Systems</span>
-          <span class="pill">Module Scripts</span>
-          <span class="pill">Debugging</span>
-          <span class="pill">Replication & Remotes</span>
-        </div>
-      </div>
-      <div class="reveal">
-        <div class="video">
-          <iframe src="https://www.youtube.com/embed/RwXDVMEJs_w" title="Combat System with Blocking" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
-      </div>
-    </div>
-  </section>
+<section id="combat" class="container reveal">
+  <h2>Combat</h2>
+  <p>Fast, responsive combat systems for Roblox.</p>
+</section>
 
-  <!-- SYSTEM: AI PATHFINDING (fixed) -->
-  <section id="ai" class="section">
-    <div class="container grid">
-      <div class="reveal">
-        <h2>AI Pathfinding System</h2>
-        <p class="muted">Smart NPC navigation using Roblox PathfindingService with obstacle handling and re-pathing under dynamic conditions. Built for consistent behavior and easy tweaking.</p>
-        <div>
-          <span class="pill">AI & PathfindingService</span>
-          <span class="pill">Problem Solving</span>
-          <span class="pill">Performance</span>
-        </div>
-      </div>
-      <div class="reveal">
-        <div class="video">
-          <iframe src="https://www.youtube.com/embed/lfDKqWvDSEE" title="AI Pathfinding System" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
-      </div>
-    </div>
-  </section>
+<section id="ai" class="container reveal">
+  <h2>AI Pathfinding</h2>
+  <p>Smart navigation systems for game NPCs.</p>
+</section>
 
-  <!-- SYSTEM: DIALOGUE SYSTEM -->
-  <section id="dialogue" class="section">
-    <div class="container grid">
-      <div class="reveal">
-        <h2>Dialogue System</h2>
-        <p class="muted">
-          A fully interactive dialogue system inspired by <em>Grow a Garden</em>, designed to make NPC conversations dynamic and engaging.
-          It supports branching dialogue paths, player choices, and can be easily adapted for story-driven Roblox experiences.
-        </p>
-        <div>
-          <span class="pill">Dialogue Trees</span>
-          <span class="pill">Player Choice</span>
-          <span class="pill">Dynamic Conversations</span>
-          <span class="pill">Roblox Scripting</span>
-        </div>
-      </div>
-      <div class="reveal">
-        <div class="video">
-          <iframe src="https://www.youtube.com/embed/u6Hgqbt2mQ4" title="Dialogue System" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
-      </div>
-    </div>
-  </section>
+<section id="contact" class="container reveal contact">
+  <h2>Contact Me</h2>
+  <a href="https://www.roblox.com/users/3095716075/profile" target="_blank" aria-label="Roblox">
+    <svg viewBox="0 0 512 512"><path d="M64 0L0 448l448 64 64-448L64 0zm243.2 309.3l-104.5-15 15-104.5 104.5 15-15 104.5z"/></svg>
+  </a>
+  <a href="https://discord.com/users/928689548475629608" target="_blank" aria-label="Discord">
+    <svg viewBox="0 0 245 240"><path d="M104.4 104.5c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1.1-6.1-4.5-11.1-10.2-11.1zm36.2 0c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1s-4.5-11.1-10.2-11.1z"/><path d="M189.5 20h-134C24.6 20 0 44.6 0 75.5v89c0 30.9 24.6 55.5 55.5 55.5h113.7l-5.3-18.5 12.8 11.8 12.1 11.2 21.4 19V75.5C210.2 44.6 215 20 189.5 20z"/></svg>
+  </a>
+  <a href="https://x.com/MariussiUss" target="_blank" aria-label="X">
+    <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.655l-5.214-6.813-5.963 6.813H1.687l7.73-8.826L1.254 2.25H8.11l4.713 6.231z"/></svg>
+  </a>
+  <a href="https://www.youtube.com/channel/UCo4dIWpNQoCgwqLQlgt3-bg" target="_blank" aria-label="YouTube">
+    <svg viewBox="0 0 24 24"><path d="M19.6 3.2H4.4A4.4 4.4 0 0 0 0 7.6v8.8a4.4 4.4 0 0 0 4.4 4.4h15.2a4.4 4.4 0 0 0 4.4-4.4V7.6a4.4 4.4 0 0 0-4.4-4.4zM9.6 15.5v-7l6.4 3.5-6.4 3.5z"/></svg>
+  </a>
+</section>
 
-  <!-- CONTACT -->
-  <section id="contact" class="section">
-    <div class="container reveal">
-      <h2>Contact</h2>
-      <p class="muted">Roblox: <strong>Swordswinger20112</strong> • Timezone: GMT+2 • Country: Norway</p>
-      <div class="contact-icons" aria-label="Contact links">
-        <!-- Roblox -->
-        <a href="https://www.roblox.com/users/000000000/profile" target="_blank" rel="noopener" aria-label="Roblox profile">
-          <svg viewBox="0 0 512 512" aria-hidden="true" focusable="false">
-            <!-- Official-style Roblox tilted-square logo with cutout -->
-            <path d="M79 0L0 433l433 79 79-433L79 0zm227 313l-114-21 21-114 114 21-21 114z"/>
-          </svg>
-          Roblox
-        </a>
-        <!-- Discord (logo glyph) -->
-        <a href="https://discord.com/users/928689548475629608" target="_blank" rel="noopener" aria-label="Discord user">
-         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="#000000">
-<g id="SVGRepo_bgCarrier" stroke-width="0"/>
-<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
-<g id="SVGRepo_iconCarrier"> <g> <path d="M216.856339,16.5966031 C200.285002,8.84328665 182.566144,3.2084988 164.041564,0 C161.766523,4.11318106 159.108624,9.64549908 157.276099,14.0464379 C137.583995,11.0849896 118.072967,11.0849896 98.7430163,14.0464379 C96.9108417,9.64549908 94.1925838,4.11318106 91.8971895,0 C73.3526068,3.2084988 55.6133949,8.86399117 39.0420583,16.6376612 C5.61752293,67.146514 -3.4433191,116.400813 1.08711069,164.955721 C23.2560196,181.510915 44.7403634,191.567697 65.8621325,198.148576 C71.0772151,190.971126 75.7283628,183.341335 79.7352139,175.300261 C72.104019,172.400575 64.7949724,168.822202 57.8887866,164.667963 C59.7209612,163.310589 61.5131304,161.891452 63.2445898,160.431257 C105.36741,180.133187 151.134928,180.133187 192.754523,160.431257 C194.506336,161.891452 196.298154,163.310589 198.110326,164.667963 C191.183787,168.842556 183.854737,172.420929 176.223542,175.320965 C180.230393,183.341335 184.861538,190.991831 190.096624,198.16893 C211.238746,191.588051 232.743023,181.531619 254.911949,164.955721 C260.227747,108.668201 245.831087,59.8662432 216.856339,16.5966031 Z M85.4738752,135.09489 C72.8290281,135.09489 62.4592217,123.290155 62.4592217,108.914901 C62.4592217,94.5396472 72.607595,82.7145587 85.4738752,82.7145587 C98.3405064,82.7145587 108.709962,94.5189427 108.488529,108.914901 C108.508531,123.290155 98.3405064,135.09489 85.4738752,135.09489 Z M170.525237,135.09489 C157.88039,135.09489 147.510584,123.290155 147.510584,108.914901 C147.510584,94.5396472 157.658606,82.7145587 170.525237,82.7145587 C183.391518,82.7145587 193.761324,94.5189427 193.539891,108.914901 C193.539891,123.290155 183.391518,135.09489 170.525237,135.09489 Z" fill="#ededed" fill-rule="nonzero"> </path> </g> </g>
-</svg>
-          Discord
-        </a>
-        <!-- X -->
-        <a href="https://x.com/MariussiUss" target="_blank" rel="noopener" aria-label="X profile">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M18.244 2H21L13.5 10.621 22 22h-6.5l-5.07-6.627L3.8 22H1l7.995-9.246L1.8 2H8.5l4.57 6.053L18.244 2z"/>
-          </svg>
-          X
-        </a>
-        <!-- YouTube -->
-        <a href="https://www.youtube.com/@MariussiUs" target="_blank" rel="noopener" aria-label="YouTube channel">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M23.5 6.2a4.5 4.5 0 0 0-3.2-3.2C18 2.5 12 2.5 12 2.5s-6 0-8.3.5A4.5 4.5 0 0 0 .5 6.2 47 47 0 0 0 0 12a47 47 0 0 0 .5 5.8 4.5 4.5 0 0 0 3.2 3.2c2.3.5 8.3.5 8.3.5s6 0 8.3-.5a4.5 4.5 0 0 0 3.2-3.2A47 47 0 0 0 24 12a47 47 0 0 0-.5-5.8zM9.8 15.5v-7l6.4 3.5-6.4 3.5z"/>
-          </svg>
-          YouTube
-        </a>
-      </div>
-      <p class="muted" style="margin-top:.6rem">
-        Hosting via GitHub Pages. Built with HTML, CSS, and JavaScript for smooth animations.
-      </p>
-    </div>
-  </section>
-
-  <footer>
-    <div class="container muted">© <span id="year"></span> MariussiUs. All rights reserved.</div>
-  </footer>
-
-  <script>
-    // Page-load entrance
-    window.addEventListener('load', () => document.body.classList.add('loaded'));
-
-    // Reveal on scroll
-    const io = new IntersectionObserver((entries)=>{
-      entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
-    }, {threshold:.14});
-    document.querySelectorAll('.reveal').forEach(el=> io.observe(el));
-
-    // Year
-    document.getElementById('year').textContent = new Date().getFullYear();
-
-    // Mobile nav toggle
-    const menuToggle = document.getElementById('menuToggle');
-    const navLinks = document.getElementById('navLinks');
-    menuToggle.addEventListener('click', () => {
-      const open = document.body.classList.toggle('nav-open');
-      menuToggle.setAttribute('aria-expanded', String(open));
-      if (getComputedStyle(navLinks).display === 'none') {
-        navLinks.style.display = 'flex';
-      } else {
-        navLinks.style.display = 'none';
+<script>
+  // Reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
       }
     });
+  }, { threshold: .14 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-    // Active link highlight
-    const sections = document.querySelectorAll('section');
-    const anchors = document.querySelectorAll('.nav-links a');
-    window.addEventListener('scroll', () => {
-      let current = '';
-      sections.forEach(s => {
-        const top = s.offsetTop - 120;
-        if (scrollY >= top) current = s.id;
-      });
-      anchors.forEach(a => {
-        a.classList.toggle('active', a.getAttribute('href') === `#${current}`);
-      });
+  // Active nav highlight
+  const sections = document.querySelectorAll('section');
+  const navAnchors = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = "";
+    sections.forEach(section => {
+      const top = section.offsetTop - 120;
+      if (scrollY >= top) current = section.id;
     });
-  </script>
+    navAnchors.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === `#${current}`) {
+        link.classList.add('active');
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
